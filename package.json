@@ -1,0 +1,67 @@
+{
+  "name": "authentication-microservice-graphql",
+  "version": "1.0.0",
+  "description": "Authentication Microservice implemented in GraphQL",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon src/index.js",
+    "start": "cross-env NODE_ENV=production node src/index.js",
+    "lint": "./node_modules/.bin/eslint src",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dimitamp/authentication-microservice-graphql.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dimitamp/authentication-microservice-graphql/issues"
+  },
+  "homepage": "https://github.com/dimitamp/authentication-microservice-graphql#readme",
+  "devDependencies": {
+    "cross-env": "^5.2.0",
+    "eslint": "^4.15.0",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-config-standard": "^11.0.0",
+    "eslint-friendly-formatter": "^3.0.0",
+    "eslint-loader": "^1.7.1",
+    "eslint-plugin-import": "^2.13.0",
+    "eslint-plugin-jest": "^21.15.1",
+    "eslint-plugin-node": "^7.0.1",
+    "eslint-plugin-prettier": "^2.6.2",
+    "eslint-plugin-promise": "^3.8.0",
+    "eslint-plugin-standard": "^3.1.0",
+    "graphql-codegen-core": "^0.14.5",
+    "husky": "^3.0.5",
+    "lint-staged": "^9.2.5",
+    "nodemon": "^1.18.3",
+    "prettier": "^1.15.2",
+    "supertest": "^3.3.0"
+  },
+  "dependencies": {
+    "apollo-server": "^2.2.5",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^8.1.0",
+    "graphql": "^14.0.2",
+    "graphql-import": "^0.7.1",
+    "graphql-scalars": "^1.0.1",
+    "graphql-tools": "^4.0.3",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.3.14",
+    "mongoose-beautiful-unique-validation": "^7.1.1",
+    "ramda": "^0.26.1",
+    "yup": "^0.27.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "src/**/**/*.js": [
+      "git add .",
+      "npm run lint"
+    ]
+  }
+}

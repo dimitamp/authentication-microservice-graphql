@@ -1,0 +1,41 @@
+enum UserRole {
+  basic
+  admin
+}
+
+scalar DateTime
+
+scalar EmailAddress
+
+type User {
+  _id: ID!
+  email: EmailAddress!
+  role: UserRole!
+  activated: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  token: String!
+}
+
+type Query {
+  user(id: ID!): User!
+}
+
+input NewUserInput {
+  email: EmailAddress!
+  password: String!
+  role: UserRole!
+}
+
+input UpdateUserInput {
+  email: EmailAddress
+  role: UserRole
+  activated: Boolean
+  password: String
+}
+
+type Mutation {
+  newUser(input: NewUserInput!): User!
+  updateUser(input: UpdateUserInput!): User!
+  removeUser(id: ID!): User!
+}
