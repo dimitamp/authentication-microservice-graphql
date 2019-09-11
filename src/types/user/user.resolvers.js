@@ -20,7 +20,7 @@ const newUser = async (_, args) => {
     ...args.input,
     activated: true
   })
-  user.token = jwtSign(user.id)
+  user.token = jwtSign({ id: user.id, email: user.email, role: user.role })
   await user.save()
   return user
 }

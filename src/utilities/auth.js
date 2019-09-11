@@ -1,5 +1,5 @@
 const { genSaltSync, hashSync, compareSync } = require('bcryptjs')
-const { sign, jwt } = require('jsonwebtoken')
+const { sign, verify } = require('jsonwebtoken')
 const { AuthenticationError } = require('apollo-server')
 const {
   path,
@@ -40,7 +40,7 @@ const getToken = req =>
       isNil,
       () => {},
       token =>
-        jwt.verify(token, secret, (e, d) =>
+        verify(token, secret, (e, d) =>
           ifElse(
             err => !isNil(err),
             () => {},
@@ -64,7 +64,7 @@ const identification = (ctx, args) =>
 
 const authorization = ctx =>
   ifElse(
-    !isNil,
+    u => !isNil(u),
     () => {},
     () => {
       throw new AuthenticationError()

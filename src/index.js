@@ -22,7 +22,7 @@ const start = async () => {
     typeDefs: [rootSchema, ...schemaTypes],
     resolvers: merge({}, user),
     async context({ req }) {
-      const user = await getToken(req)
+      const { decoded: user } = await getToken(req)
       return { user }
     }
   })
