@@ -55,4 +55,8 @@ UserSchema.methods.comparePassword = function(password) {
   return comparePassword(password, this.password)
 }
 
+UserSchema.virtual('id').get(function() {
+  return this._id.toString()
+})
+
 module.exports = mongoose.model('User', UserSchema)
