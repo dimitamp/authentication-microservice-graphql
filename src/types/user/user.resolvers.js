@@ -126,5 +126,10 @@ module.exports = {
   },
   DateTime: DateTimeResolver,
   EmailAddress: EmailAddressResolver,
-  Password: PasswordResolver
+  Password: PasswordResolver,
+  User: {
+    id(user) {
+      return user._id + ''
+    }
+  }
 }
