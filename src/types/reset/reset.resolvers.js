@@ -5,8 +5,6 @@ const { jwtSign } = require('../../utilities/auth')
 const newReset = async (_, args) => {
   const { email } = args
   const user = await User.findOne({ email })
-    .lean()
-    .exec()
   if (!user) {
     throw new Error('User does not exist')
   }

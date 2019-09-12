@@ -21,6 +21,10 @@ const ResetSchema = new mongoose.Schema({
   }
 })
 
+ResetSchema.virtual('id').get(function() {
+  return this._id.toString()
+})
+
 // Plugin for Mongoose that turns duplicate errors into regular Mongoose validation errors.
 
 ResetSchema.plugin(beautifyUnique)

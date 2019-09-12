@@ -33,7 +33,7 @@ const UserSchema = new mongoose.Schema(
       type: String
     }
   },
-  { timestamps: true }
+  { timestamps: true, virtuals: true }
 )
 
 // Plugin for Mongoose that turns duplicate errors into regular Mongoose validation errors.

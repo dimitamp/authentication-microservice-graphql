@@ -17,8 +17,6 @@ const user = async (_, args, ctx) => {
   authorization(ctx, args)
   identification(ctx, args)
   const user = await User.findById(args.id)
-    .lean()
-    .exec()
   if (!user) {
     throw new Error('User does not exist')
   }
@@ -38,10 +36,11 @@ const newUser = async (_, args) => {
 const updateUser = async (_, args, ctx) => {
   authorization(ctx, args)
   identification(ctx, args)
-  const user = await User.findByIdAndUpdate(args.id, args.input, { new: true })
-    .select('-password')
-    .lean()
-    .exec()
+  const user = await User.findById(args.id)
+  for (const key of Object.keys(args.input)) {
+    user[key] = args.input[key]
+  }
+  await user.save()
   if (!user) {
     throw new Error('User does not exist')
   }
@@ -52,8 +51,6 @@ const removeUser = async (_, args, ctx) => {
   authorization(ctx, args)
   identification(ctx, args)
   const user = await User.findByIdAndRemove(args.id)
-    .lean()
-    .exec()
   if (!user) {
     throw new Error('User does not exist')
   }
@@ -72,7 +69,7 @@ const authenticateUser = async (_, args) => {
     throw new Error('User account is not activated')
   }
   if (!user.comparePassword(password, user.password)) {
-    throw AuthenticationError()
+    throw new AuthenticationError()
   }
   user.token = jwtSign({ id: user.id, email: user.email, role: user.role })
   await user.save()

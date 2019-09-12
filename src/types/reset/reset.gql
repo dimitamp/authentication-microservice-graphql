@@ -1,10 +1,10 @@
 type Reset {
-  _id: ID!
+  id: ID!
   email: EmailAddress!
   expireAt: DateTime!
   token: String!
 }
 
-extend Mutation {
+extend type Mutation {
   newReset(email: EmailAddress!): Reset!
 }
