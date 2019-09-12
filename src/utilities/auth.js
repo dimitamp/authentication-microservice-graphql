@@ -9,7 +9,8 @@ const {
   slice,
   identity,
   pipe,
-  equals
+  equals,
+  or
 } = require('ramda')
 const config = require('../config')
 
@@ -38,12 +39,12 @@ const getToken = req =>
     ),
     ifElse(
       isNil,
-      () => {},
+      () => req,
       token =>
         verify(token, secret, (e, d) =>
           ifElse(
             err => !isNil(err),
-            () => {},
+            () => req,
             (_, decoded) => {
               req.decoded = decoded
               return req
@@ -55,7 +56,11 @@ const getToken = req =>
 
 const identification = (ctx, args) =>
   ifElse(
-    (c, a) => equals(path(['user', 'id'], c), path(['id'], a)),
+    (c, a) =>
+      or(
+        equals(path(['user', 'id'], c), path(['id'], a)),
+        equals(path('user', 'role', c), 'admin')
+      ),
     () => {},
     () => {
       throw new AuthenticationError()
