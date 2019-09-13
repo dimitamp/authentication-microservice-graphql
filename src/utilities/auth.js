@@ -1,6 +1,5 @@
 const { genSaltSync, hashSync, compareSync } = require('bcryptjs')
 const { sign, verify } = require('jsonwebtoken')
-const { AuthenticationError } = require('apollo-server')
 const {
   path,
   ifElse,
@@ -59,11 +58,11 @@ const identification = (ctx, args) =>
     (c, a) =>
       or(
         equals(path(['user', 'id'], c), path(['id'], a)),
-        equals(path('user', 'role', c), 'admin')
+        equals(path(['user', 'role'], c), 'admin')
       ),
     () => {},
     () => {
-      throw new AuthenticationError()
+      throw new Error('Authorization Error')
     }
   )(ctx, args)
 
@@ -72,7 +71,7 @@ const authorization = ctx =>
     u => !isNil(u),
     () => {},
     () => {
-      throw new AuthenticationError()
+      throw new Error('Authentication Error')
     }
   )(ctx.user)
 

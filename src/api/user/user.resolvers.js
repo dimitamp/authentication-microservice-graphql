@@ -3,8 +3,8 @@ const { GraphQLScalarType } = require('graphql')
 const { GraphQLError } = require('graphql/error')
 const { Kind } = require('graphql/language')
 const { AuthenticationError } = require('apollo-server')
-
 const User = require('./user.model')
+
 const {
   authorization,
   identification,
@@ -14,16 +14,20 @@ const {
 const PASSWORD_REGEX = /^.{8,}$/
 
 const user = async (_, args, ctx) => {
-  authorization(ctx, args)
+  authorization(ctx)
   identification(ctx, args)
-  const user = await User.findById(args.id)
+  const user = await ctx.models.user.findById(args.id)
   if (!user) {
     throw new Error('User does not exist')
   }
   return user
 }
 
-const newUser = async (_, args) => {
+const newUser = async (_, args, ctx) => {
+  if (args.input.role === 'admin') {
+    authorization(ctx)
+    identification(ctx, args)
+  }
   const user = await new User({
     ...args.input,
     activated: true
@@ -34,34 +38,34 @@ const newUser = async (_, args) => {
 }
 
 const updateUser = async (_, args, ctx) => {
-  authorization(ctx, args)
+  authorization(ctx)
   identification(ctx, args)
-  const user = await User.findById(args.id)
-  for (const key of Object.keys(args.input)) {
-    user[key] = args.input[key]
-  }
-  await user.save()
+  const user = await ctx.models.user.findById(args.id)
   if (!user) {
     throw new Error('User does not exist')
   }
+  Object.keys(args.input).forEach(key => {
+    user[key] = args.input[key]
+  })
+  await user.save()
   return user
 }
 
 const removeUser = async (_, args, ctx) => {
-  authorization(ctx, args)
+  authorization(ctx)
   identification(ctx, args)
-  const user = await User.findByIdAndRemove(args.id)
+  const user = await ctx.models.user.findByIdAndRemove(args.id)
   if (!user) {
     throw new Error('User does not exist')
   }
   return user
 }
 
-const authenticateUser = async (_, args) => {
+const authenticateUser = async (_, args, ctx) => {
   const {
     input: { email, password }
   } = args
-  const user = await User.findOne({ email }).select('+password')
+  const user = await ctx.models.user.findOne({ email }).select('+password')
   if (!user) {
     throw new Error('User does not exist')
   }
@@ -69,7 +73,7 @@ const authenticateUser = async (_, args) => {
     throw new Error('User account is not activated')
   }
   if (!user.comparePassword(password, user.password)) {
-    throw new AuthenticationError()
+    throw new AuthenticationError('Password does not match')
   }
   user.token = jwtSign({ id: user.id, email: user.email, role: user.role })
   await user.save()
@@ -84,7 +88,7 @@ const PasswordResolver = new GraphQLScalarType({
       throw new TypeError(`Value is not string: ${value}`)
     }
     if (!PASSWORD_REGEX.test(value)) {
-      throw new TypeError(`Value is not a valid password: ${value}`)
+      throw new TypeError(`Value must contain at least 8 characters: ${value}`)
     }
     return value
   },
@@ -93,7 +97,7 @@ const PasswordResolver = new GraphQLScalarType({
       throw new TypeError(`Value is not string: ${value}`)
     }
     if (!PASSWORD_REGEX.test(value)) {
-      throw new TypeError(`Value is not a valid password: ${value}`)
+      throw new TypeError(`Value must contain at least 8 characters: ${value}`)
     }
     return value
   },
@@ -105,7 +109,9 @@ const PasswordResolver = new GraphQLScalarType({
     }
 
     if (!PASSWORD_REGEX.test(ast.value)) {
-      throw new TypeError(`Value is not a valid password: ${ast.value}`)
+      throw new TypeError(
+        `Value must contain at least 8 characters: ${ast.value}`
+      )
     }
     return ast.value
   }

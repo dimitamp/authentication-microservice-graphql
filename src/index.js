@@ -1,37 +1,40 @@
-const { loadTypeSchema } = require('./utilities/schema')
 const { getToken } = require('./utilities/auth')
-const merge = require('lodash.merge')
 const config = require('./config')
 const { connect } = require('./db')
-const user = require('./types/user/user.resolvers')
-const reset = require('./types/reset/reset.resolvers')
-const { ApolloServer } = require('apollo-server')
+const { ApolloServer } = require('apollo-server-express')
+const express = require('express')
 const path = require('path')
 require('dotenv').config({ path: path.join(__dirname, '../', '.env') })
-const types = ['user', 'reset']
+const { typeDefs, resolvers, context } = require('./api')
 
 const start = async () => {
-  const rootSchema = `
-    schema {
-      query: Query
-      mutation: Mutation
-    }
-  `
-  const schemaTypes = await Promise.all(types.map(loadTypeSchema))
+  const app = express()
 
   const server = new ApolloServer({
-    typeDefs: [rootSchema, ...schemaTypes],
-    resolvers: merge({}, user, reset),
+    typeDefs,
+    resolvers,
     async context({ req }) {
       const { decoded: user } = await getToken(req)
-      return { user }
-    }
+      return { ...context, user }
+    },
+    formatError: error => ({
+      message: error.message,
+      code: error.extensions.code
+    })
   })
 
   await connect(config.dbUrl)
-  const { url } = await server.listen({ port: config.port })
 
-  console.log(`GQL server ready at ${url}`)
+  server.applyMiddleware({
+    app,
+    path: '/api/graphql'
+  })
+
+  app.listen(config.port, () => {
+    console.log(
+      `Serving graphql api on /api/graphql and playground on /playground!`
+    )
+  })
 }
 
 start()
