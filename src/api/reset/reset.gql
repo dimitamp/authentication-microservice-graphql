@@ -7,4 +7,5 @@ type Reset {
 
 extend type Mutation {
   newReset(email: EmailAddress!): Reset!
+  changePassword(password: Password!): User!
 }

@@ -31,9 +31,7 @@ const start = async () => {
   })
 
   app.listen(config.port, () => {
-    console.log(
-      `Serving graphql api on /api/graphql and playground on /playground!`
-    )
+    console.log(`Serving graphql api on /api/graphql`)
   })
 }
 

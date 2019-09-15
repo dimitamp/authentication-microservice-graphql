@@ -8,7 +8,6 @@ schema {
   mutation: Mutation
 }
 `
-
 module.exports = {
   typeDefs: [rootSchema, user.typeDefs, reset.typeDefs].join(' '),
   resolvers: merge({}, user.resolvers, reset.resolvers),

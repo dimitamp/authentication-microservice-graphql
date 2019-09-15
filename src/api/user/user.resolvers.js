@@ -3,7 +3,6 @@ const { GraphQLScalarType } = require('graphql')
 const { GraphQLError } = require('graphql/error')
 const { Kind } = require('graphql/language')
 const { AuthenticationError } = require('apollo-server')
-const User = require('./user.model')
 
 const {
   authorization,
@@ -28,7 +27,7 @@ const newUser = async (_, args, ctx) => {
     authorization(ctx)
     identification(ctx, args)
   }
-  const user = await new User({
+  const user = await ctx.models.user.create({
     ...args.input,
     activated: true
   })
