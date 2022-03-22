@@ -1,10 +1,10 @@
+const path = require('path')
+require('dotenv').config({ path: path.join(__dirname, '../', '.env') })
 const { getToken } = require('./utilities/auth')
 const config = require('./config')
 const { connect } = require('./db')
 const { ApolloServer } = require('apollo-server-express')
 const express = require('express')
-const path = require('path')
-require('dotenv').config({ path: path.join(__dirname, '../', '.env') })
 const { typeDefs, resolvers, context } = require('./api')
 
 const start = async () => {

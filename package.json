@@ -6,8 +6,7 @@
   "scripts": {
     "dev": "nodemon src/index.js",
     "start": "cross-env NODE_ENV=production node src/index.js",
-    "lint": "./node_modules/.bin/eslint src",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "./node_modules/.bin/eslint src"
   },
   "repository": {
     "type": "git",

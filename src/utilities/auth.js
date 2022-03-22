@@ -16,10 +16,7 @@ const config = require('../config')
 const secret = config.secret
 
 const passwordDigest = (password, saltWorkFactor = 10) =>
-  pipe(
-    genSaltSync,
-    salt => hashSync(password, salt)
-  )(saltWorkFactor)
+  pipe(genSaltSync, salt => hashSync(password, salt))(saltWorkFactor)
 
 const comparePassword = (password, hash) => compareSync(password, hash)
 
